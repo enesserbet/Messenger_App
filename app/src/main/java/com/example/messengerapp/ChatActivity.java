@@ -152,7 +152,7 @@ public class ChatActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(Void unused) {
                             progressDialog.dismiss();
-                            Toast.makeText(ChatActivity.this, "Gitti knk", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ChatActivity.this, "", Toast.LENGTH_SHORT).show();
 
 
                         }
@@ -160,7 +160,7 @@ public class ChatActivity extends AppCompatActivity {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             progressDialog.dismiss();
-                            Toast.makeText(ChatActivity.this, "gitmedi knk" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ChatActivity.this, "Failed" + e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
 
