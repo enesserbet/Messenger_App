@@ -43,8 +43,13 @@ public class AdapterMessage2 extends RecyclerView.Adapter<AdapterMessage2.Holder
         String uid = model.getUid();
         String timestamp = model.getTimestamp();
         String chatUid = model.getChatUid();
+        String formattedDate = ChatActivity.formatTimestamp(Long.parseLong(timestamp));
 
         holder.messageopponent.setText(message);
+        holder.date.setText(formattedDate);
+        holder.name.setText(senderUid);
+
+
 
     }
 
@@ -57,10 +62,14 @@ public class AdapterMessage2 extends RecyclerView.Adapter<AdapterMessage2.Holder
     class HolderMessage2 extends RecyclerView.ViewHolder {
 
         TextView messageopponent;
+        TextView date;
+        TextView name;
 
         public HolderMessage2(@NonNull View itemView) {
             super(itemView);
             messageopponent = binding.messagefirst;
+            date = binding.date01;
+            name = binding.name01;
         }
     }
 }

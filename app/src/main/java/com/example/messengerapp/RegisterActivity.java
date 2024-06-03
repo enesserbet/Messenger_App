@@ -11,6 +11,7 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.messengerapp.databinding.ActivityChatBinding;
 import com.example.messengerapp.databinding.ActivityRegisterBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -30,6 +31,7 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //binding = ActivityRegisterBinding.inflate(getLayoutInflater());
         binding = ActivityRegisterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -54,13 +56,14 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private String name = "", email = "", password = "";
+    private String name = "", email = "", password = "", CompCode = "";
 
     private void validateData() {
         name = binding.nameEt.getText().toString().trim();
         email = binding.emailEt.getText().toString().trim();
         password = binding.passwordEt.getText().toString().trim();
         String cPassword = binding.cPasswordEt.getText().toString().trim();
+        CompCode = binding.cUserCode.getText().toString().trim();
 
         if (TextUtils.isEmpty(name)) {
             Toast.makeText(this, "Enter Name...", Toast.LENGTH_SHORT).show();
@@ -72,6 +75,8 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(this, "Confirm Password...", Toast.LENGTH_SHORT).show();
         } else if (!password.equals(cPassword)) {
             Toast.makeText(this, "Password doesn't match...", Toast.LENGTH_SHORT).show();
+        } else if (TextUtils.isEmpty(CompCode)) {
+            Toast.makeText(this, "Enter Company Code...", Toast.LENGTH_SHORT).show();
         } else {
             createAccount();
         }
@@ -108,7 +113,7 @@ public class RegisterActivity extends AppCompatActivity {
         hashMap.put("email", "" + email);
         hashMap.put("name", "" + name);
         hashMap.put("profilImage", "");
-        hashMap.put("userType", "user");
+        hashMap.put("userType", CompCode);
         hashMap.put("timestamp", "" + timestamp);
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");

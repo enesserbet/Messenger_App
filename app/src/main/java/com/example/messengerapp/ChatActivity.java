@@ -7,11 +7,11 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.messengerapp.databinding.ActivityChatBinding;
-import com.example.messengerapp.databinding.ActivityDashboardUserBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,11 +20,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
+import java.lang.Math;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -36,10 +38,8 @@ public class ChatActivity extends AppCompatActivity {
 
     private ArrayList<ModelMessage> messageArrayList;
     private ArrayList<ModelMessage2> message2ArrayList;
-    private String receiveruid, name;
+    private String receiveruid, name, date;
 
-
-    private AdapterMessage adapterMessage;
 
     private AdapterMessage2 adapterMessage2;
 
@@ -81,6 +81,17 @@ public class ChatActivity extends AppCompatActivity {
     }
 
 
+
+    public static final String formatTimestamp(long timestamp) {
+
+        Calendar cal = Calendar.getInstance(Locale.GERMAN);
+        cal.setTimeInMillis(timestamp);
+        String date = DateFormat.format("dd/MM/yyyy HH:mm:ss", cal).toString();
+
+
+        return date;
+    }
+
     private String text = "";
 
     private void validateData() {
@@ -90,7 +101,14 @@ public class ChatActivity extends AppCompatActivity {
             Toast.makeText(this, "Texting Please...", Toast.LENGTH_SHORT).show();
         } else {
             uploadMessage();
+            clearText();
         }
+    }
+
+
+
+    private void clearText() {
+        binding.textEt.setText(null);
     }
 
 
@@ -103,34 +121,51 @@ public class ChatActivity extends AppCompatActivity {
         receiveruid = intent.getStringExtra("uid");
         name = intent.getStringExtra("name");
 
+        FirebaseUser firebaseUsere = firebaseAuth.getCurrentUser();
+        if (firebaseUsere == null) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        } else {
+            String email = firebaseUser.getEmail();
+
+            //DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+            long timestamp = System.currentTimeMillis();
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("message", "" + text);
+            hashMap.put("uid", "" + firebaseAuth.getUid());
+            hashMap.put("senderUid", "" +email);
+            hashMap.put("timestamp", "" + timestamp);
+            hashMap.put("receiverUid", "" + receiveruid);
+            hashMap.put("chatUid", "" + receiveruid + senderuid);
+            //ref.child("Chats").push().setValue(hashMap);
+
+            //int a = (int) (Math.random()*100)+1;
+            //System.out.println(a);
+
+            //loadMessages();
+            loadMessages2();
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Messages");
+
+            ref.child("" + timestamp)
+
+                    .setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            progressDialog.dismiss();
+                            Toast.makeText(ChatActivity.this, "Gitti knk", Toast.LENGTH_SHORT).show();
 
 
-        long timestamp = System.currentTimeMillis();
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("message", "" + text);
-        hashMap.put("uid", "" + firebaseAuth.getUid());
-        hashMap.put("senderUid", "" + senderuid);
-        hashMap.put("timestamp", "" + timestamp);
-        hashMap.put("receiverUid", "" + receiveruid);
-        hashMap.put("chatUid", "" + receiveruid + senderuid);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Toast.makeText(ChatActivity.this, "gitmedi knk" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Messages");
-        ref.child("" + timestamp)
-                .setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        progressDialog.dismiss();
-                        Toast.makeText(ChatActivity.this, "Gitti knk", Toast.LENGTH_SHORT).show();
 
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        progressDialog.dismiss();
-                        Toast.makeText(ChatActivity.this, "gitmedi knk" + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
+        }
 
     }
 
@@ -141,14 +176,18 @@ public class ChatActivity extends AppCompatActivity {
             finish();
         } else {
             String email = firebaseUser.getEmail();
+
             binding.subTitleTV.setText(email);
 
         }
     }
 
 
+
+
     private void loadMessages2() {//burası çalııyor sorun yok
         message2ArrayList = new ArrayList<>();
+
 
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         String senderuid = firebaseUser.getUid();
@@ -161,10 +200,9 @@ public class ChatActivity extends AppCompatActivity {
         System.out.println("Burası chatuid2");
 
 
-
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Messages");
-        ref.orderByChild("chatUid").equalTo(chatUid)
-                .addValueEventListener(new ValueEventListener() {
+        //ref.orderByChild("chatUid").equalTo(chatUid)
+                ref.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         message2ArrayList.clear();
@@ -175,16 +213,13 @@ public class ChatActivity extends AppCompatActivity {
                             message2ArrayList.add(modelMessage2);
 
 
-
                             adapterMessage2 = new AdapterMessage2(ChatActivity.this, message2ArrayList);
-                            binding.categoryiesRv.setAdapter(adapterMessage2);
-                            /*if ((modelMessage2.getSenderUid().equals(senderuid)) && modelMessage2.getReceiverUId().equals(receiveruid)) {
+
+                            if ((modelMessage2.getChatUid().equals(receiveruid+senderuid)) || (modelMessage2.getChatUid().equals(senderuid+receiveruid))){
                                 binding.categoryiesRv.setAdapter(adapterMessage2);
-
-
                             }
 
-                             */
+
                         }
 
 
@@ -211,7 +246,6 @@ public class ChatActivity extends AppCompatActivity {
         System.out.println("Burası chatuid2");
 
 
-
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Messages");
         ref.orderByChild("chatUid").equalTo(chatUid)
                 .addValueEventListener(new ValueEventListener() {
@@ -223,7 +257,6 @@ public class ChatActivity extends AppCompatActivity {
 
 
                             message2ArrayList.add(modelMessage2);
-
 
 
                             adapterMessage2 = new AdapterMessage2(ChatActivity.this, message2ArrayList);
@@ -239,6 +272,8 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 });
     }
+
+
 
 
 

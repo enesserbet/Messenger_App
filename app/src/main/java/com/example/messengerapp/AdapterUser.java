@@ -14,6 +14,7 @@ import com.example.messengerapp.databinding.RowCategoryUserBinding;
 import java.util.ArrayList;
 
 public class AdapterUser extends RecyclerView.Adapter<AdapterUser.HolderUsers> {
+    //private DashboardUserActivity context;
     private DashboardUserActivity context;
     private ArrayList<ModelUsers> usersArrayList;
     private static RowCategoryUserBinding binding;

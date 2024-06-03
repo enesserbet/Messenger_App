@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/back01"
+
     android:padding="20dp"
     tools:context=".MainActivity">
 
     <ImageView
         android:id="@+id/iconIv"
-        android:src="@drawable/logo"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"/>
+        android:layout_marginTop="40dp"
+        android:src="@drawable/logo" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -24,17 +24,16 @@
         android:layout_marginTop="10dp"
         android:text="Welcome to MessengerApp"
         android:textColor="@color/black"
-        android:textSize="16sp"/>
+        android:textSize="16sp" />
 
     <Button
         android:id="@+id/loginBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/registerBtn"
-        android:text="Logın"
         android:background="@drawable/shape_button01"
-        android:textColor="@color/white"
-        />
+        android:text="Logın"
+        android:textColor="@color/white" />
 
     <Button
         android:id="@+id/registerBtn"
@@ -43,6 +42,6 @@
         android:layout_alignParentBottom="true"
         android:background="@drawable/shape_button02"
         android:text="Register"
-        android:textColor="@color/purple_500"/>
+        android:textColor="@color/purple_500" />
 
 </RelativeLayout>

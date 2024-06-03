@@ -64,12 +64,8 @@ public class DashboardUserActivity extends AppCompatActivity {
             }
         });
 
-        binding.sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //validateData();
-            }
-        });
+
+
     }
 
     private void loadUsers() {

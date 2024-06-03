@@ -31,8 +31,8 @@ public class AdapterMessage extends RecyclerView.Adapter<AdapterMessage.HolderMe
 
     private RowMessageOpponentBinding binding;
 
-    public static final int VIEW_TYPE_ SENT = 1;
-    public static final int VIEW_TYPE RECEIVED
+    //public static final int VIEW_TYPE_ SENT = 1;
+    //public static final int VIEW_TYPE RECEIVED = 0;
 
 
     public AdapterMessage(ChatActivity context1, ArrayList<ModelMessage> messageArrayList) {
@@ -56,6 +56,7 @@ public class AdapterMessage extends RecyclerView.Adapter<AdapterMessage.HolderMe
         String uid = model1.getUid();
         String timestamp = model1.getTimestamp();
         String chatUid = model1.getChatUid();
+
 
         holder.messagefirst.setText(message1);
 
